@@ -22,6 +22,10 @@
     "password": null,
     "database": "database_production",
     "host": "127.0.0.1",
-    "dialect": "mysql"
+    "dialect": "postgres",
+    "logging": false,
+    "operatorsAliases": false,
+    "use_env_variable": "postgres://zhvwqebouxmemr:678910a40c0c126854c899d185596b730d22d244df751f743b7f7997df1f626a@ec2-75-101-133-29.compute-1.amazonaws.com:5432/dape261qek60ck"
+  
   }
 }
