@@ -1,0 +1,21 @@
+<!-- #1 Set messages on the request and chekc if there is a key called 'error' which tells us there is an error to report-->
+
+<% if(messages.error) { %>
+
+<!-- #2 Use a bootstrap alert class to give users a visual cue-->
+ 
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+    Validation errors:
+    <ul>
+
+<!-- #3 Loop over the array displaying the 'param' that caused the error & associated message from the validation method-->
+
+      <% messages.error.forEach((err) => { %>
+        <li><%= `${err.param} ${err.msg}` %></li>
+      <% }) %>
+    </ul>
+  </div>
+<% } %>
