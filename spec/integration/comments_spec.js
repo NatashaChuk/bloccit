@@ -219,5 +219,74 @@ describe("routes : comments", () => {
 
    }); //end context for signed in user
 
+//non-owner user
+
+    describe("non-owner performing CRUD actions for Comment", () => {
+      beforeEach((done) => {
+        request.get({
+          url: "http://localhost:3000/auth/fake",
+          form: {
+            role: "member",
+            userId: this.user.id+2
+          }
+        }, (err, res, body) => {
+          done();
+        });
+      });
+ 
+     describe("POST /topics/:topicId/posts/:postId/comments/:id/destroy", () => {
+        it("should not delete the comment with associated id", (done) => {
+          Comment.all()
+          .then((comments) => {
+             const commentsLengthBeforeDelete = comments.length;
+             expect(commentsLengthBeforeDelete).toBe(1);
+              request.post(`${base}${this.topic.id}/posts/${this.post.id}/comments/${this.comment.id}/destroy`, (err, res, body) => {
+               Comment.all()
+                .then((comments) => {
+                  expect(err).toBeNull();
+                  expect(comments.length).toBe(commentsLengthBeforeDelete);
+                  done();
+                })
+              });
+            })
+          });
+        });
+    });
+  //end non-owner users
+
+  //admin users
+  describe("signed in user performing CRUD actions for Comment", () => {
+    beforeEach((done) => {
+      request.get({
+        url: "http://localhost:3000/auth/fake",
+        form: {
+          role: "admin",
+          userId: this.user.id
+        }
+      }, (err, res, body) => {
+        done();
+      });
+    });
+
+    describe("POST /topics/:topicId/posts/:postId/comments/:id/destroy", () => {
+      it("should delete the comment with associated id", (done) => {
+        Comment.all()
+        .then((comments) => {
+          const commentsLengthBeforeDelete = comments.length;
+          expect(commentsLengthBeforeDelete).toBe(1);
+          request.post(`${base}${this.topic.id}/posts/${this.post.id}/comments/${this.comment.id}/destroy`, (err, res, body) => {
+            expect(res.statusCode).toBe(302);
+            Comment.all()
+            .then((comments) => {
+              expect(err).toBeNull();
+              expect(comments.length).toBe(commentsLengthBeforeDelete-1);
+              done();
+            })
+          });
+        })
+      });
+    });
+  });
+  //end admin users
 }); 
 
