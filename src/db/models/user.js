@@ -25,9 +25,14 @@ module.exports = (sequelize, DataTypes) => {
     	as: "posts"
     });
 
-    User.hasMany(modes.Comment, {
+    User.hasMany(models.Comment, {
       foreignKey: "userId",
       as: "comments"
+    });
+
+    User.hasMany(models.Vote, {
+      foreignKey: "userId",
+      as: "votes"
     });
 
     User.prototype.isAdmin = function() {

@@ -33,7 +33,22 @@ module.exports = (sequelize, DataTypes) => {
     Post.hasMany(models.Comment, {
       foreignKey: "postId",
       as: "comments"
+    });
+
+    Post.hasMany(models.Vote, {
+      foreignKey: "postId",
+      as: "votes"
     });   
   };
+
+  Post.prototype.getPoints = function(){
+//#1 Check to see if the post has any votes. If not, return 0.
+    if(this.votes.length === 0) return 0
+//#2 If a post has votes, then get a count of all values, add them and return the result
+    return this.votes
+      .map((V) => { return v.value })
+      .reduce((prev, next) => { return prev + next });
+  };
+
   return Post;
 };
