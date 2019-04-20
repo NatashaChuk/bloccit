@@ -38,8 +38,26 @@ module.exports = (sequelize, DataTypes) => {
     Post.hasMany(models.Vote, {
       foreignKey: "postId",
       as: "votes"
-    });   
+    }); 
+
+    Post.afterCreate((post,callback) => {
+      return models.Favorite.create({
+        userId: post.userId,
+        postId: post.id
+      });
+    });
+
+    Post.afterCreate((post, callback) => {
+      return models.vote.create({
+        value: 1, 
+        userId: post.userId,
+        postId: post.id
+      });
+    });
+
   };
+
+
 
   Post.prototype.getPoints = function(){
 //#1 Check to see if the post has any votes. If not, return 0.
@@ -48,7 +66,15 @@ module.exports = (sequelize, DataTypes) => {
     return this.votes
       .map((V) => { return v.value })
       .reduce((prev, next) => { return prev + next });
-  };
+  }
+
+  Post.prototype.hasUpVoteFor = function(userId) {
+
+  }
+
+  Post.prototype.hasDownVoteFor = function(userId) {
+
+  }  
 
   return Post;
 };

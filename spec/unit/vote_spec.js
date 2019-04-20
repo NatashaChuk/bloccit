@@ -137,6 +137,21 @@ describe("Vote", () => {
          })
        });
 
+       it("should not create a vote with a value that is not 1 or -1", (done) => {
+        vote.create({
+          value: 2,
+          postId: this.post.id,
+          userId: this.user.id
+        })
+        .then((vote) => {
+          done();
+        })
+        .catch((err) => {
+          expect(err.message).toContain("value failed");
+          done();
+        });
+       });
+
      });
     //#1 Define a sutie for the 'setUser' method
      describe("#setUser()", () => {

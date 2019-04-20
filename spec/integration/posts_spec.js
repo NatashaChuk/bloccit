@@ -5,6 +5,8 @@ const base = "http://localhost:3000/topics";
 const sequelize = require("../../src/db/models/index").sequelize;
 const Topic = require("../../src/db/models").Topic;
 const Post = require("../../src/db/models").Post;
+const User = require("../../src/db/models").User;
+const Vote = require("../../src/db/models").Vote;
 
 describe("routes : posts", () => {
 

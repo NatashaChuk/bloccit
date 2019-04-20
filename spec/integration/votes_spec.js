@@ -179,6 +179,55 @@ describe("routes : votes", () => {
        });
      });
 
+     describe("GET /topics/:topicId/posts/:postId/votes/downvote", () => {
+      it("should not create a second vote", (done) => {
+        const options = {
+          url: `${base}${this.topic.id}/posts/${this.post.id}/votes/downvote`
+        };
+        request.get(options, (err, res, body) => {
+          Vote.findAll()
+          .then((votes) => {
+            expect(votes.length).toBe(1);
+            request.get(options, (err, res, body) => {
+              Vote.findAll()
+              .then((votes) => {
+                expect(votes.length).toBe(1);
+                done();
+              })
+              .catch((err) => {
+                console.log(err);
+                done();
+              });
+            });
+          })
+        });
+      });
+    });
    }); //end context for signed in user
 
+   describe("#getPoints()", () => {
+    it("should return 0 if there are no votes", (done) => {
+      expect(this.post.getPoints()).toBe(0);
+      done();
+    });
+
+    it("should return the value of the votes", (done) => {
+      Vote.create({
+        value: 1,
+        postId: this.post.id,
+        userId: this.user.id
+      })
+      .then((vote) => {
+        this.vote.setPost(this.post)
+        .then((vote) => {
+          expect(this.post.getPoints()).toBe(1);
+          done();
+        })
+      })
+      .catch((err) => {
+        console.log(err);
+        done();
+      });
+    });
+   });
 });
