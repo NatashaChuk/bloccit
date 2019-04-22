@@ -2,7 +2,11 @@ const request = require("request");
 const server = require("../../src/server");
 const base = "http://localhost:3000/users/";
 const User = require("../../src/db/models").User;
+const Topic = require("../../src/db/models").Topic;
+const Post = require("../../src/db/models").Post;
+const Comment = require("../../src/db/models").Comment;
 const sequelize = require("../../src/db/models/index").sequelize;
+
 
 describe("routes : users", () => {
 
@@ -18,6 +22,66 @@ describe("routes : users", () => {
     });
 
   });
+
+  describe("GET /users/:id", () => {
+
+     beforeEach((done) => {
+ // #3
+       this.user;
+       this.post;
+       this.comment;
+
+       User.create({
+         email: "starman@tesla.com",
+         password: "Trekkie4lyfe"
+       })
+       .then((res) => {
+         this.user = res;
+
+         Topic.create({
+           title: "Winter Games",
+           description: "Post your Winter Games stories.",
+           posts: [{
+             title: "Snowball Fighting",
+             body: "So much snow!",
+             userId: this.user.id
+           }]
+         }, {
+           include: {
+             model: Post,
+             as: "posts"
+           }
+         })
+         .then((res) => {
+           this.post = res.posts[0];
+
+           Comment.create({
+             body: "This comment is alright.",
+             postId: this.post.id,
+             userId: this.user.id
+           })
+           .then((res) => {
+             this.comment = res;
+             done();
+           })
+         })
+       })
+
+     });
+
+ // #4
+     it("should present a list of comments and posts a user has created", (done) => {
+
+       request.get(`${base}${this.user.id}`, (err, res, body) => {
+
+ // #5
+         expect(body).toContain("Snowball Fighting");
+         expect(body).toContain("This comment is alright.")
+         done();
+       });
+
+     });
+   });
 
   describe("GET /users/sign_up", () => {
 
@@ -100,45 +164,5 @@ describe("routes : users", () => {
       });
 
     }); 
- ...
-#1: We write a test to confirm that a form with valid values for the attributes creates a user.
-
-#2: When the response returns, we check the users table for a user with the given email and confirm that it has an ID.
-
-#3: We submit a request with invalid values and expect not to create a user.
-
-Run the tests to make sure they fail.
-
-Let's work on our query interface for users. Create  queries.users.js in src/db/:
-
-Terminal
-$ touch src/db/queries.users.js
-bloccit/src/db/queries.users.js
-// #1
-const User = require("./models").User;
-const bcrypt = require("bcryptjs");
-
-module.exports = {
-// #2
-  createUser(newUser, callback){
-
-// #3
-    const salt = bcrypt.genSaltSync();
-    const hashedPassword = bcrypt.hashSync(newUser.password, salt);
-
-// #4
-    return User.create({
-      email: newUser.email,
-      password: hashedPassword
-    })
-    .then((user) => {
-      callback(null, user);
-    })
-    .catch((err) => {
-      callback(err);
-    })
-  }
-
-}
 
 });
