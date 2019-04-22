@@ -1,6 +1,7 @@
 const User = require("./models").User;
 const Post = require("./models").Post;
 const Comment = require("./models").Comment;
+const Favorite = require("./models").Favorite;
 const bcrypt = require("bcryptjs");
 
 module.exports = {
@@ -45,14 +46,18 @@ module.exports = {
           .then((comments) => {
  //#7 Store the result in the object and pass the object to the callback           
             result["comments"] = comments;
+
+          Favorite.scope({method: ["getFavoritePosts", id]}).all()
+          .then((favoritedPosts) => {
+            result["favoritedPosts"] = favoritedPosts;
             callback(null, result);
           })
           .catch((err) => {
             callback(err);
           })
-        })
+         })
+       })
       }
     })
   }
-
 }

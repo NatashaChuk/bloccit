@@ -77,6 +77,7 @@ describe("routes : users", () => {
  // #5
          expect(body).toContain("Snowball Fighting");
          expect(body).toContain("This comment is alright.")
+         expect(body).toContain("Favorited Posts");
          done();
        });
 
